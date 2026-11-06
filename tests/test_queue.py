@@ -310,6 +310,9 @@ def test_load_register_merges_overlay_and_rejects_unknown_fields(tmp_path):
         over.write_text(json.dumps({"a": bad}), encoding="utf-8")
         with pytest.raises(ValueError):
             load_register(reg, over)
+    over.write_text(json.dumps({"other": {"gate": "owner"}}), encoding="utf-8")
+    with pytest.raises(ValueError):
+        load_register(reg, over)
 
 
 def test_cli_rejects_an_invalid_pin(tmp_path, capsys):
