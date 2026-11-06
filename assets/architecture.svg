@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 400" role="img" aria-labelledby="t d" font-family="Segoe UI, Helvetica, Arial, sans-serif">
+  <title id="t">Competition Portfolio Queue architecture</title>
+  <desc id="d">Sources feed a public register and a private overlay. A read-only tick compares them with the GPU queue and writes reports and proposals. The GPU queue stays the only dispatch authority.</desc>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#14213d"/></marker>
+  </defs>
+  <rect width="960" height="400" fill="#fbfaf7"/>
+  <g fill="#14213d" font-size="13">
+    <g>
+      <rect x="24" y="62" width="186" height="238" rx="10" fill="#ffffff" stroke="#c9c6bd"/>
+      <text x="40" y="90" font-weight="700" font-size="15">Evidence sources</text>
+      <text x="40" y="120">Official rules and portals</text>
+      <text x="40" y="146">Leaderboards and APIs</text>
+      <text x="40" y="172">Organiser replies</text>
+      <text x="40" y="198">GitHub inventory</text>
+      <text x="40" y="224">Discovery scouts</text>
+      <text x="40" y="250">Work folders</text>
+    </g>
+    <g>
+      <rect x="262" y="62" width="196" height="108" rx="10" fill="#e6f2f3" stroke="#00798c"/>
+      <text x="278" y="90" font-weight="700" font-size="15">Public register</text>
+      <text x="278" y="116">data/competitions.json</text>
+      <text x="278" y="140">Stage, dates, repository</text>
+      <rect x="262" y="192" width="196" height="108" rx="10" fill="#f6e7e9" stroke="#d1495b"/>
+      <text x="278" y="220" font-weight="700" font-size="15">Private overlay</text>
+      <text x="278" y="246">Next action, blockers, rank</text>
+      <text x="278" y="270">Never published</text>
+    </g>
+    <g>
+      <rect x="510" y="62" width="196" height="238" rx="10" fill="#ffffff" stroke="#14213d"/>
+      <text x="526" y="90" font-weight="700" font-size="15">Queue engine</text>
+      <text x="526" y="120">validate: schema gate</text>
+      <text x="526" y="146">order: nearest deadline</text>
+      <text x="526" y="172">schedule: GPU capacity</text>
+      <text x="526" y="198">tick: read-only audit</text>
+      <text x="526" y="224">render: lists and docs</text>
+      <text x="526" y="262" fill="#6b7280">Runs on a timer in</text>
+      <text x="526" y="282" fill="#6b7280">observe mode</text>
+    </g>
+    <g>
+      <rect x="758" y="62" width="178" height="108" rx="10" fill="#ffffff" stroke="#c9c6bd"/>
+      <text x="774" y="90" font-weight="700" font-size="15">Reports</text>
+      <text x="774" y="116">Anomalies, lanes</text>
+      <text x="774" y="140">Proposed commands</text>
+      <rect x="758" y="192" width="178" height="108" rx="10" fill="#fff6e0" stroke="#b7791f"/>
+      <text x="774" y="220" font-weight="700" font-size="15">GPU queue</text>
+      <text x="774" y="246">Only dispatch authority</text>
+      <text x="774" y="270">Two lanes, one per card</text>
+    </g>
+  </g>
+  <g stroke="#14213d" stroke-width="1.6" fill="none" marker-end="url(#a)">
+    <path d="M210 116H258"/>
+    <path d="M210 246H258"/>
+    <path d="M458 116H506"/>
+    <path d="M458 246H506"/>
+    <path d="M706 116H754"/>
+    <path d="M758 246H710" stroke-dasharray="5 4"/>
+  </g>
+  <text x="24" y="340" fill="#14213d" font-size="14" font-weight="700">Rule of the design</text>
+  <text x="24" y="364" fill="#6b7280" font-size="13">The engine reads the queue and proposes. A person or an authorised agent applies the change, so lanes never move on their own.</text>
+</svg>
