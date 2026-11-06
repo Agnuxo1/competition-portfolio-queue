@@ -10,6 +10,7 @@ set -euo pipefail
 BASE="${PORTFOLIO_BASE:-/mnt/datos/competition-portfolio}"
 QUEUE="${PORTFOLIO_QUEUE:-/home/ai/servidor-ia/cola.json}"
 mkdir -p "$BASE/state"
+git -C "$BASE/repo" pull --ff-only --quiet || echo "pull failed, using the local copy" >&2
 cp "$QUEUE" "$BASE/state/queue-snapshot.json"
 cd "$BASE/repo"
 PYTHONPATH=src python3 -m competition_queue \
