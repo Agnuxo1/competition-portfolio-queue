@@ -54,6 +54,10 @@ def test_validate_reports_each_defect(bad, fragment):
     assert any(fragment in e for e in validate([comp(**bad)]))
 
 
+def test_validate_requires_a_real_boolean_for_registered():
+    assert any("registered" in e for e in validate([comp(registered="false")]))
+
+
 def test_validate_reports_duplicates():
     assert any("duplicate" in e for e in validate([comp(), comp()]))
 
@@ -147,6 +151,38 @@ def test_pin_edges_inside_an_hour_are_exact():
     assert r["a"].delivered == pytest.approx(3)
 
 
+def test_pin_gives_no_credit_before_not_before():
+    c = comp(gpu_target_hours=48, not_before_utc="2026-11-06T09:00:00Z")
+    pin = Pin("a", NOW, NOW + timedelta(hours=2), 2)
+    a = simulate([c], NOW, gpus=2, pins=(pin,))["a"]
+    assert a.first == parse_utc("2026-11-06T09:00:00Z")
+    pinned_only = simulate([comp(gpu_target_hours=48, not_before_utc="2026-11-06T09:00:00Z",
+                                 submission_utc="2026-11-06T12:00:00Z")], NOW, pins=(pin,))["a"]
+    assert pinned_only.delivered == pytest.approx(2 + 2)  # 09:00-10:00 pinned, then free to the stop
+
+
+def test_simulate_skips_a_lapsed_registration():
+    c = comp(gpu_target_hours=48, registration_utc="2026-11-06T07:00:00Z")
+    assert simulate([c], NOW) == {}
+
+
+def test_simulate_stops_at_a_pending_registration():
+    c = comp(gpu_target_hours=48, registration_utc="2026-11-06T09:00:00Z")
+    a = simulate([c], NOW)["a"]
+    assert a.delivered == pytest.approx(2) and a.stop == parse_utc("2026-11-06T09:00:00Z")
+
+
+def test_simulate_ignores_a_completed_registration():
+    c = comp(gpu_target_hours=4, registration_utc="2026-11-06T07:00:00Z", registered=True)
+    assert simulate([c], NOW)["a"].delivered == pytest.approx(4)
+
+
+@pytest.mark.parametrize("gpus, hours", [(-1, 1), (0, 1), (1, 0), (1, -1)])
+def test_pin_rejects_invalid_values(gpus, hours):
+    with pytest.raises(ValueError):
+        Pin("a", NOW, NOW + timedelta(hours=hours), gpus)
+
+
 def test_capacity_is_conserved():
     a = comp("a", gpu_target_hours=10, submission_utc="2026-11-06T14:00:00Z")
     b = comp("b", gpu_target_hours=10, submission_utc="2026-11-06T14:00:00Z")
@@ -222,6 +258,7 @@ def test_audit_reports_missing_dates_on_each_side():
     undated = comp(submission_utc=None, deadline_note="month only")
     assert "register_date_missing" in audit([undated], queue(cierre_utc="2026-11-08T00:00:00Z"), NOW)["anomalies"]
     assert "queue_date_missing" in audit([comp()], queue(), NOW)["anomalies"]
+    assert "queue_date_missing" in audit([comp()], {"pendiente_cierre": ["a"]}, NOW)["anomalies"]
 
 
 def test_audit_uses_aliases():
@@ -266,6 +303,14 @@ def test_load_register_merges_overlay_and_rejects_unknown_fields(tmp_path):
     over.write_text(json.dumps({"a": {"typo": 1}}), encoding="utf-8")
     with pytest.raises(ValueError):
         load_register(reg, over)
+
+
+def test_cli_rejects_an_invalid_pin(tmp_path, capsys):
+    reg = tmp_path / "r.json"
+    reg.write_text(json.dumps({"competitions": public_rows([comp()])}), encoding="utf-8")
+    pin = "a,2026-11-06T08:00:00Z,2026-11-06T10:00:00Z,-1"
+    assert main(["--register", str(reg), "schedule", "--pin", pin]) == 2
+    assert "invalid pin" in capsys.readouterr().err
 
 
 def test_cli_validate_tick_and_failure(tmp_path, capsys):

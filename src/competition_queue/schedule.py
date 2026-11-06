@@ -66,6 +66,10 @@ class Pin:
     end: datetime
     gpus: int
 
+    def __post_init__(self) -> None:
+        if self.gpus <= 0 or self.end <= self.start:
+            raise ValueError(f"invalid pin {self.id}: needs positive GPUs and end after start")
+
 
 @dataclass
 class Allocation:
@@ -104,6 +108,8 @@ def simulate(
         if c.submission is None:
             continue
         stop = c.submission - timedelta(hours=freeze_hours)
+        if c.registration and not c.registered:
+            stop = min(stop, c.registration)  # work past a missed registration is lost
         if stop <= now:
             continue
         allocations[c.id] = Allocation(c.id, stop, c.gpu_target_hours)
@@ -133,7 +139,7 @@ def _fill_segment(allocations, not_before, pins, start, end, gpus) -> None:
         used = min(pin.gpus, free)
         free -= used
         a = allocations.get(pin.id)
-        if a is not None and start < a.stop:
+        if a is not None and start < a.stop and not_before.get(a.id, start) <= start:
             _credit(a, used * hours, start, end)
     if free <= 0:
         return

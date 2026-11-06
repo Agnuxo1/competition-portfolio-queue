@@ -74,7 +74,7 @@ def audit(items: list[Competition], queue: dict, now: datetime) -> dict:
         dates = [d for d in (c.submission, c.registration) if d]
         if c.active and closed and not dates:
             anomalies["register_date_missing"].append({"id": qid, "queue": entry["cierre_utc"]})
-        elif c.active and dates and "estado" in entry and not closed:
+        elif c.active and dates and not closed:
             anomalies["queue_date_missing"].append({"id": qid, "register": c.submission_utc or c.registration_utc})
         elif c.active and closed and all(abs(closed - d) > MISMATCH_TOLERANCE for d in dates):
             anomalies["deadline_mismatch"].append(
