@@ -14,15 +14,24 @@ from __future__ import annotations
 from collections import defaultdict
 from datetime import datetime, timedelta
 
-from .model import ACTIVE_STAGES, Competition, parse_utc
-from .schedule import lane, ordered
+from .model import ACTIVE_STAGES, WORK_STAGES, Competition, parse_utc
+from .schedule import lane, ordered, registration_lapsed
 
 MISMATCH_TOLERANCE = timedelta(hours=1)
 QUEUE_GROUPS = ("en_cola", "activos", "pendiente_cierre")
+FINAL_QUEUE_STATES = ("ENTREGADO", "CERRADO")
 
 
 def queue_entries(queue: dict) -> dict[str, dict]:
-    """Flatten a queue listing into id -> entry, keeping the richest copy of each."""
+    """Flatten a queue listing or a raw queue file into id -> entry.
+
+    The raw file is the read-only path: `cola listar` itself reviews and saves.
+    """
+    if "proyectos" in queue:
+        return {
+            pid: entry for pid, entry in queue["proyectos"].items()
+            if entry.get("estado") not in FINAL_QUEUE_STATES
+        }
     entries: dict[str, dict] = {}
     for group in QUEUE_GROUPS:
         for entry in queue.get(group, []):
@@ -62,13 +71,20 @@ def audit(items: list[Competition], queue: dict, now: datetime) -> dict:
             proposals.append(f"client.py cola cerrar {qid}  # register stage {c.stage}")
         if closed and closed < now and entry.get("estado") in ("EN COLA", "AUDITORIA") and c.stage not in ("INELIGIBLE", "CLOSED"):
             anomalies["queue_date_already_past"].append({"id": qid, "cierre_utc": entry["cierre_utc"], "stage": c.stage})
-        if closed and c.submission and abs(closed - c.submission) > MISMATCH_TOLERANCE and c.active:
+        dates = [d for d in (c.submission, c.registration) if d]
+        if c.active and closed and not dates:
+            anomalies["register_date_missing"].append({"id": qid, "queue": entry["cierre_utc"]})
+        elif c.active and dates and "estado" in entry and not closed:
+            anomalies["queue_date_missing"].append({"id": qid, "register": c.submission_utc or c.registration_utc})
+        elif c.active and closed and all(abs(closed - d) > MISMATCH_TOLERANCE for d in dates):
             anomalies["deadline_mismatch"].append(
-                {"id": qid, "queue": entry["cierre_utc"], "register": c.submission_utc}
+                {"id": qid, "queue": entry["cierre_utc"], "register": c.submission_utc or c.registration_utc}
             )
 
     in_queue = set(matched.values())
     for c in items:
+        if c.stage in WORK_STAGES and registration_lapsed(c, now):
+            anomalies["registration_lapsed"].append({"id": c.id, "registration_utc": c.registration_utc})
         if c.stage in ("VERIFYING", "ELIGIBLE", "PREPARING", "TRAINING", "AUDIT", "READY") and c.id not in in_queue:
             anomalies["active_entry_not_in_queue"].append({"id": c.id, "stage": c.stage})
         if c.code_sharing == "platform_only" and c.repo_visibility == "public" and c.stage in ACTIVE_STAGES:

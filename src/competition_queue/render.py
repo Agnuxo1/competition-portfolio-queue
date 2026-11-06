@@ -123,9 +123,12 @@ def private_list(items: list[Competition], now: datetime) -> str:
 
 def schedule_table(results: dict[str, Allocation]) -> str:
     """GPU delivery table for one scenario, nearest stop first."""
-    lines = ["| Competition | Stop (UTC) | Target GPU-h | Delivered GPU-h | Result |", "|---|---|---:|---:|---|"]
+    lines = [
+        "| Competition | Stop (UTC) | Target GPU-h | Delivered GPU-h | Pinned beyond target | Result |",
+        "|---|---|---:|---:|---:|---|",
+    ]
     for a in sorted(results.values(), key=lambda a: a.stop):
-        lines.append(f"| {a.id} | {utc(a.stop)} | {a.target} | {a.delivered} | {a.status} |")
+        lines.append(f"| {a.id} | {utc(a.stop)} | {a.target:g} | {a.delivered:.1f} | {a.extra:.1f} | {a.status} |")
     return "\n".join(lines) + "\n"
 
 

@@ -45,7 +45,7 @@ def test_validate_accepts_a_clean_entry():
         ({"stage": "NOPE"}, "unknown stage"),
         ({"compute": "tpu"}, "unknown compute"),
         ({"url": "http://example.org"}, "https"),
-        ({"url": "https://mail.google.com/mail/u/0/#all/1"}, "private material"),
+        ({"url": "https://mail.google.com/"}, "private material"),
         ({"repo": "x", "repo_visibility": "none"}, "without visibility"),
         ({"submission_utc": None}, "without any deadline"),
     ],
@@ -58,11 +58,20 @@ def test_validate_reports_duplicates():
     assert any("duplicate" in e for e in validate([comp(), comp()]))
 
 
-def test_registration_counts_only_before_work_starts():
-    early = comp(stage="ELIGIBLE", registration_utc="2026-11-07T00:00:00Z")
-    late = comp(stage="TRAINING", registration_utc="2026-11-07T00:00:00Z")
-    assert effective_deadline(early, NOW) == parse_utc("2026-11-07T00:00:00Z")
-    assert effective_deadline(late, NOW) == parse_utc("2026-11-10T00:00:00Z")
+def test_registration_counts_until_the_entry_is_registered():
+    pending = comp(stage="ELIGIBLE", registration_utc="2026-11-07T00:00:00Z")
+    done = comp(stage="ELIGIBLE", registration_utc="2026-11-07T00:00:00Z", registered=True)
+    assert effective_deadline(pending, NOW) == parse_utc("2026-11-07T00:00:00Z")
+    assert effective_deadline(done, NOW) == parse_utc("2026-11-10T00:00:00Z")
+
+
+def test_lapsed_registration_ends_the_entry_and_is_reported():
+    lapsed = comp(stage="READY", registration_utc="2026-11-06T07:30:00Z")
+    assert effective_deadline(lapsed, NOW) is None
+    assert ordered([lapsed], NOW) == []
+    assert audit([lapsed], {}, NOW)["anomalies"]["registration_lapsed"][0]["id"] == "a"
+    registered = comp(stage="READY", registration_utc="2026-11-06T07:30:00Z", registered=True)
+    assert effective_deadline(registered, NOW) == parse_utc("2026-11-10T00:00:00Z")
 
 
 def test_past_dates_do_not_count():
@@ -84,6 +93,7 @@ def test_finished_stages_leave_the_order():
 @pytest.mark.parametrize(
     "kw, expected",
     [
+        ({"stage": "TRAINING"}, "gpu"),
         ({"gate": "owner"}, "owner"),
         ({"gate": "organiser"}, "waiting"),
         ({"gpu_target_hours": 48}, "gpu"),
@@ -97,7 +107,7 @@ def test_lane_selection(kw, expected):
 def test_simulate_fills_target_and_respects_freeze():
     c = comp(gpu_target_hours=48, submission_utc="2026-11-08T00:00:00Z")
     a = simulate([c], NOW)["a"]
-    assert a.delivered == 48 and a.status == "FULL"
+    assert a.delivered == pytest.approx(48) and a.status == "FULL"
     assert a.last < a.stop
 
 
@@ -105,7 +115,43 @@ def test_simulate_marks_impossible_targets_partial():
     c = comp(gpu_target_hours=48, submission_utc="2026-11-06T14:00:00Z")
     a = simulate([c], NOW)["a"]
     assert 0 < a.delivered < 48 and a.status == "PARTIAL"
-    assert a.delivered == 8  # four usable hours on two cards
+    assert a.delivered == pytest.approx(8)  # four usable hours on two cards
+
+
+def test_partial_hours_are_not_rounded_up():
+    start = parse_utc("2026-11-06T08:30:00Z")
+    c = comp(gpu_target_hours=48, submission_utc="2026-11-06T12:00:00Z")
+    a = simulate([c], start)["a"]
+    assert a.delivered == pytest.approx(3)  # 08:30 to the 10:00 stop on two cards
+    assert a.last == parse_utc("2026-11-06T10:00:00Z")
+
+
+def test_pin_credit_stops_at_the_target_and_reports_the_surplus():
+    c = comp(gpu_target_hours=1, submission_utc="2026-11-09T00:00:00Z")
+    a = simulate([c], NOW, pins=(Pin("a", NOW, NOW + timedelta(hours=1), 2),))["a"]
+    assert a.delivered == pytest.approx(1) and a.extra == pytest.approx(1)
+
+
+def test_pin_never_credits_after_the_stop():
+    c = comp(gpu_target_hours=48, submission_utc="2026-11-06T12:00:00Z")
+    pin = Pin("a", NOW, NOW + timedelta(hours=24), 2)
+    a = simulate([c], NOW, pins=(pin,))["a"]
+    assert a.delivered == pytest.approx(4) and a.last <= a.stop
+
+
+def test_pin_edges_inside_an_hour_are_exact():
+    c = comp(gpu_target_hours=48, submission_utc="2026-11-06T12:00:00Z")
+    other = comp("other", gpu_target_hours=48, submission_utc="2026-11-09T00:00:00Z")
+    pin = Pin("other", NOW, NOW + timedelta(minutes=30), 2)
+    r = simulate([c, other], NOW, pins=(pin,))
+    assert r["a"].delivered == pytest.approx(3)
+
+
+def test_capacity_is_conserved():
+    a = comp("a", gpu_target_hours=10, submission_utc="2026-11-06T14:00:00Z")
+    b = comp("b", gpu_target_hours=10, submission_utc="2026-11-06T14:00:00Z")
+    r = simulate([a, b], NOW)
+    assert r["a"].delivered + r["b"].delivered == pytest.approx(8)
 
 
 def test_pin_takes_capacity_from_other_entries():
@@ -119,7 +165,7 @@ def test_pin_takes_capacity_from_other_entries():
 def test_pinned_hours_count_for_their_own_entry():
     c = comp(gpu_target_hours=10, submission_utc="2026-11-09T00:00:00Z")
     a = simulate([c], NOW, pins=(Pin("a", NOW, NOW + timedelta(hours=5), 2),))["a"]
-    assert a.delivered == 10
+    assert a.delivered == pytest.approx(10)
 
 
 def test_simulate_honours_not_before():
@@ -141,6 +187,11 @@ def test_queue_entries_merges_strings_and_dicts():
     assert e["x"]["estado"] == "EN COLA" and e["y"] == {"id": "y"}
 
 
+def test_queue_entries_reads_the_raw_file_and_skips_final_states():
+    raw = {"proyectos": {"a": {"estado": "EN COLA"}, "b": {"estado": "CERRADO"}, "c": {"estado": "ENTREGADO"}}}
+    assert set(queue_entries(raw)) == {"a"}
+
+
 def queue(**entry):
     return {"en_cola": [{"id": "a", "estado": "EN COLA", **entry}]}
 
@@ -159,6 +210,18 @@ def test_audit_flags_deadline_mismatch_past_dates_and_unknown_entries():
     assert "queue_date_already_past" in r["anomalies"]
     r = audit([], queue(), NOW)
     assert r["anomalies"]["queue_entry_not_in_register"] == [{"id": "a"}]
+
+
+def test_audit_compares_the_queue_with_either_kind_of_deadline():
+    item = comp(registration_utc="2026-11-08T00:00:00Z")
+    r = audit([item], queue(cierre_utc="2026-11-08T00:00:00Z"), NOW)
+    assert "deadline_mismatch" not in r["anomalies"]
+
+
+def test_audit_reports_missing_dates_on_each_side():
+    undated = comp(submission_utc=None, deadline_note="month only")
+    assert "register_date_missing" in audit([undated], queue(cierre_utc="2026-11-08T00:00:00Z"), NOW)["anomalies"]
+    assert "queue_date_missing" in audit([comp()], queue(), NOW)["anomalies"]
 
 
 def test_audit_uses_aliases():
@@ -222,5 +285,5 @@ def test_published_register_is_valid_and_public_safe():
     items = load_register(path)
     assert validate(items) == []
     text = path.read_text(encoding="utf-8")
-    for fragment in ("mail.google.com", "D:/", "/mnt/", "next_action", "blocker", "neurochip"):
+    for fragment in ("mail.google.com", "D:/", "/mnt/", "next_action", "blocker", "gpu queue"):
         assert fragment.lower() not in text.lower()

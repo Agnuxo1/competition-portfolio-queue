@@ -19,7 +19,7 @@
 
 A solo research programme can run more competitions than any one list can track. Deadlines live on Kaggle, Codabench, Devpost, OpenReview and national portals, status lives in work folders and mailboxes, and the two GPUs live behind their own queue. Entries get lost in the gaps between those lists.
 
-This project keeps a single validated register, orders open work by the nearest date that can still end an entry, simulates whether the GPUs can actually deliver a training block before each freeze point, and audits the register against the live GPU queue on a timer. The audit is read-only. It reports and proposes, and the GPU queue stays the only dispatch authority.
+This project keeps a single validated register, orders open work by the nearest date that can still end an entry, simulates whether the GPUs can actually deliver a training block before each freeze point, and audits the register against the live GPU queue; `scripts/debian` holds the timer that runs it. The audit is read-only. It reports and proposes, and the GPU queue stays the only dispatch authority.
 
 ## What it found on its first run
 
@@ -32,7 +32,7 @@ Run against the real portfolio on 6 November 2026, the first reconciliation gave
 | Open entries with no record in the GPU queue | 8 |
 | Open entries still needing a dedicated repository | 10 |
 
-The capacity simulation showed why a fixed block matters. Holding both GPUs on one entry until its deadline delivers 14 of 48 GPU-hours to the next entry, while releasing one GPU after 72 hours lets every entry reach its target ([table](docs/GPU_SCENARIOS.md)). These figures are simulated capacity, not training results.
+The capacity simulation showed why a fixed block matters. Holding both GPUs on one entry until its deadline delivers 14 of 48 GPU-hours to the next entry, while releasing one GPU after 72 hours lets every simulated entry reach its target ([table](docs/GPU_SCENARIOS.md)). These figures are simulated capacity, not training results.
 
 ## Research question
 
@@ -44,7 +44,7 @@ Can a deterministic register and a simple earliest-deadline rule keep a two-GPU 
 
 1. **Register.** `data/competitions.json` holds public facts only: name, official link, platform, dates in UTC, stage and repository. Validation rejects unknown stages, naive timestamps and links to private material.
 2. **Private overlay.** Next actions, blockers and rankings stay in a local file merged by id. It is ignored by Git, and a test asserts that none of its fields reach the public register.
-3. **Order.** Open work sorts by the nearest date that can still end the entry. A registration date counts until work has started.
+3. **Order.** Open work sorts by the nearest date that can still end the entry. A registration date counts until the entry is registered, and a lapsed one is reported rather than hidden.
 4. **Lanes.** Each entry belongs to one lane: the owner, the GPUs, the agents, or waiting on a third party.
 5. **Capacity.** `schedule` simulates hourly earliest-deadline allocation with owner-pinned blocks and a two-hour freeze before each deadline.
 6. **Tick.** `tick` compares the register with the queue and reports stale dates, finished entries still queued, mismatched deadlines and entries missing a dedicated repository. It writes proposals and changes nothing.

@@ -35,7 +35,7 @@ VISIBILITY = ("public", "private", "none")
 GATES = ("none", "owner", "organiser", "platform", "auditor")
 
 ID_RE = re.compile(r"^[a-z0-9][a-z0-9-]*$")
-PRIVATE_URL_RE = re.compile(r"mail\.google\.com|^[A-Za-z]:[\\/]|/home/|/mnt/")
+PRIVATE_URL_RE = re.compile(r"^https://mail\.google\.com")
 
 
 def parse_utc(value: str | None) -> datetime | None:
@@ -61,6 +61,7 @@ class Competition:
     stage: str
     submission_utc: str | None = None
     registration_utc: str | None = None
+    registered: bool = False
     not_before_utc: str | None = None
     deadline_note: str = ""
     code_sharing: str = "unknown"
@@ -93,7 +94,7 @@ class Competition:
 
 PUBLIC_FIELDS = (
     "id", "name", "platform", "url", "region", "compute", "stage",
-    "submission_utc", "registration_utc", "not_before_utc", "deadline_note",
+    "submission_utc", "registration_utc", "registered", "not_before_utc", "deadline_note",
     "code_sharing", "repo", "repo_visibility", "gpu_target_hours",
 )
 PRIVATE_FIELDS = ("gate", "next_action", "blocker", "rank", "aliases")

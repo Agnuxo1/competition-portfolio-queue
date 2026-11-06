@@ -1,0 +1,9 @@
+# SPDX-FileCopyrightText: 2026 Francisco Angulo de Lafuente
+# SPDX-License-Identifier: MIT
+[Unit]
+Description=Competition portfolio read-only audit tick
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/env bash /mnt/datos/competition-portfolio/repo/scripts/debian/run_tick.sh
+Nice=10
