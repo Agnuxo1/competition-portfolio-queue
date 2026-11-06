@@ -1,0 +1,4 @@
+# The SHA-256 manifest must match on every platform, so line endings stay fixed.
+* text=auto eol=lf
+*.gif binary
+*.png binary
