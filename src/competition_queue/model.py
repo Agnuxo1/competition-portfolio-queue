@@ -125,6 +125,8 @@ def validate(items: list[Competition]) -> list[str]:
             errors.append(f"{where}: url must be https")
         if PRIVATE_URL_RE.search(c.url):
             errors.append(f"{where}: url points at private material")
+        if not isinstance(c.registered, bool):
+            errors.append(f"{where}: registered must be true or false")
         if c.gpu_target_hours < 0:
             errors.append(f"{where}: negative gpu_target_hours")
         if c.repo and c.repo_visibility == "none":

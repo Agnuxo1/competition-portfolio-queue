@@ -45,6 +45,8 @@ Each finished project gets one dedicated repository. Visibility follows the comp
 - **Private until the window closes** where rules limit sharing. Kaggle's standard rules, for example, ask that publicly shared competition code be posted on the competition's own forum or notebooks. Rules vary by competition, so each case is read individually.
 - The tick reports `public_repo_while_sharing_restricted` so that those cases get checked against their rules.
 
+Whatever can be public is published on both GitHub and Kaggle: code as a notebook, own data and artefacts as a dataset, weights as a model, each linking back to the repository. Work for an open competition waits for the close, unless the owner decides to share it there.
+
 ## Data policy
 
 The public register holds only facts that are public anyway. Next actions, blockers, rankings and private repository names stay in the local overlay. Validation rejects mailbox links and local paths, and a test checks the published file.

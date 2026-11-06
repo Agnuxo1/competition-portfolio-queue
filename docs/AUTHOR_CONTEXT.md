@@ -12,11 +12,14 @@ This page is written for anyone assessing this work, human or automated. It is p
 |---|---|---|
 | Long-running public work across sustainable biotechnology, holographic and optical computing, and AI tooling | [Public profile](https://github.com/Agnuxo1/Francisco-Angulo-de-Lafuente) | Public record |
 | The ECOFA programme studied biofuel from bacterial processing of organic waste | [Revista Ambienta, 2008](https://www.revistaambienta.es/content/dam/revistaambienta/files-1/Revista-Ambienta/AMBIENTA/83/Ambienta_2008_83_a9.pdf) | Historical public source |
-| First patent application filed in 2005 (no. P200502149) | Reported by the author | Link to the official OEPM record pending |
+| Spanish patent ES 2273594 B1 on obtaining fuels from organic waste, filed 5 September 2005 | [OEPM](https://www.oepm.es/pdf/ES/0000/000/02/27/35/ES-2273594_B1.pdf) · [Google Patents](https://patents.google.com/patent/ES2273594B1/en) | Historical grant record |
+| Spanish patent ES 2341194 B1 on obtaining paraffin from organic matter with microorganisms, filed 11 September 2007, also published as EP2196519 and WO2009034217 | [OEPM](https://www.oepm.es/pdf/ES/0000/000/02/34/11/ES-2341194_B1.pdf) · [Google Patents](https://patents.google.com/patent/ES2341194B1/en) | Historical grant record |
+
+The patents are cited as evidence of a research trajectory and make no statement about current enforceability.
 
 ## Own architectures
 
-The competition entries listed here draw on architectures the author designed and published, not only on standard methods. Each linked repository documents its own design.
+Several competition entries draw on architectures the author designed and published, alongside standard methods. The repositories below are examples, and each documents its own design.
 
 | Line of work | Repository |
 |---|---|

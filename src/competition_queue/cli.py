@@ -65,7 +65,11 @@ def main(argv: list[str] | None = None) -> int:
         text = private_list(items, now) if args.private else public_list(items, now)
         Path(args.out).write_text(text, encoding="utf-8", newline="\n")
     elif args.command == "schedule":
-        pins = tuple(parse_pin(p) for p in args.pin)
+        try:
+            pins = tuple(parse_pin(p) for p in args.pin)
+        except ValueError as exc:
+            print(f"error: {exc}", file=sys.stderr)
+            return 2
         print(schedule_table(simulate(items, now, gpus=args.gpus, pins=pins)), end="")
     elif args.command == "tick":
         queue = json.loads(Path(args.queue).read_text(encoding="utf-8"))
