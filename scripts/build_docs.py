@@ -48,7 +48,7 @@ def frame(title: str, results: dict, colour: str, shown_upto: int) -> Image.Imag
         visible = a.delivered if SHOWN.index(name) < shown_upto else 0
         ax.barh(y, visible, color=colour, height=0.58)
         if SHOWN.index(name) < shown_upto:
-            ax.text(a.target + 1, y, f"{a.delivered}/{a.target}", va="center", color=INK, fontsize=11)
+            ax.text(a.target + 1, y, f"{a.delivered:.0f}/{a.target:g}", va="center", color=INK, fontsize=11)
     ax.set_yticks(range(len(names)), names, color=INK, fontsize=11)
     ax.set_xlim(0, 58)
     ax.set_xlabel("GPU-hours delivered before each freeze point (simulated)", color=MUTED, fontsize=10)

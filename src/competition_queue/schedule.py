@@ -13,12 +13,20 @@ from datetime import datetime, timedelta
 from .model import WORK_STAGES, Competition
 
 FREEZE_HOURS = 2  # the last hours before a deadline are for freezing and delivery
+EPSILON = 1e-9
+
+
+def registration_lapsed(c: Competition, now: datetime) -> bool:
+    """True when the entry needed a registration whose date has already gone."""
+    return bool(c.registration and not c.registered and c.registration <= now)
 
 
 def effective_deadline(c: Competition, now: datetime) -> datetime | None:
-    """Earliest date still ahead that can end the entry; registration counts until work starts."""
+    """Earliest date still ahead that can end the entry; a lapsed registration ends it."""
+    if registration_lapsed(c, now):
+        return None
     dates = []
-    if c.registration and c.stage in ("DISCOVERED", "VERIFYING", "ELIGIBLE", "READY"):
+    if c.registration and not c.registered:
         dates.append(c.registration)
     if c.submission:
         dates.append(c.submission)
@@ -44,7 +52,7 @@ def lane(c: Competition) -> str:
         return "owner"
     if c.gate in ("organiser", "platform"):
         return "waiting"
-    if c.compute == "gpu" and c.gpu_target_hours > 0:
+    if c.compute == "gpu" and (c.gpu_target_hours > 0 or c.stage == "TRAINING"):
         return "gpu"
     return "agent"
 
@@ -63,16 +71,17 @@ class Pin:
 class Allocation:
     id: str
     stop: datetime
-    target: int
-    delivered: int = 0
+    target: float
+    delivered: float = 0.0  # GPU-hours counted towards the target, never above it
+    extra: float = 0.0      # pinned GPU-hours beyond the target
     first: datetime | None = None
     last: datetime | None = None
 
     @property
     def status(self) -> str:
-        if self.delivered >= self.target:
+        if self.delivered >= self.target - EPSILON:
             return "FULL"
-        return "PARTIAL" if self.delivered else "NONE"
+        return "PARTIAL" if self.delivered > EPSILON else "NONE"
 
 
 def simulate(
@@ -82,54 +91,74 @@ def simulate(
     pins: tuple[Pin, ...] = (),
     freeze_hours: int = FREEZE_HOURS,
 ) -> dict[str, Allocation]:
-    """Give each hour's free GPUs to the nearest unfinished deadline.
+    """Give the free GPUs of each exact time segment to the nearest unfinished deadline.
 
-    The target is in GPU-hours, so 48 means 24 wall-clock hours on two cards.
-    Pinned hours count towards their own entry, and the time step is one hour.
+    Segments break at every stop, pin edge and start date, so no credit crosses a
+    limit. The target is in GPU-hours: 48 means 24 wall-clock hours on two cards.
     """
     allocations: dict[str, Allocation] = {}
     not_before: dict[str, datetime] = {}
     for c in items:
         if c.compute != "gpu" or c.gpu_target_hours <= 0 or c.stage not in WORK_STAGES:
             continue
-        if c.submission is None or c.submission <= now:
+        if c.submission is None:
             continue
         stop = c.submission - timedelta(hours=freeze_hours)
+        if stop <= now:
+            continue
         allocations[c.id] = Allocation(c.id, stop, c.gpu_target_hours)
         if c.not_before:
             not_before[c.id] = c.not_before
     if not allocations:
         return {}
     horizon = max(a.stop for a in allocations.values())
-    hour = timedelta(hours=1)
-    t = now
-    while t < horizon:
-        free = gpus
-        for pin in pins:
-            if pin.start <= t < pin.end and free > 0:
-                used = min(pin.gpus, free)
-                free -= used
-                if pin.id in allocations:
-                    _credit(allocations[pin.id], used, t)
-        ready = sorted(
-            (
-                a for a in allocations.values()
-                if a.delivered < a.target and t < a.stop
-                and not_before.get(a.id, t) <= t
-            ),
-            key=lambda a: a.stop,
-        )
-        for a in ready:
-            if free <= 0:
-                break
-            used = min(free, a.target - a.delivered)
-            free -= used
-            _credit(a, used, t)
-        t += hour
+    edges = {now, horizon}
+    edges.update(a.stop for a in allocations.values())
+    edges.update(not_before.values())
+    for pin in pins:
+        edges.update((pin.start, pin.end))
+    points = sorted(e for e in edges if now <= e <= horizon)
+    for start, end in zip(points, points[1:]):
+        _fill_segment(allocations, not_before, pins, start, end, gpus)
     return allocations
 
 
-def _credit(a: Allocation, gpu_hours: int, t: datetime) -> None:
-    a.delivered += gpu_hours
-    a.first = a.first or t
-    a.last = t
+def _fill_segment(allocations, not_before, pins, start, end, gpus) -> None:
+    """Credit one segment; every limit is a segment edge, so each holds throughout it."""
+    hours = (end - start).total_seconds() / 3600
+    free = gpus
+    for pin in pins:
+        if not (pin.start <= start and end <= pin.end) or free <= 0:
+            continue
+        used = min(pin.gpus, free)
+        free -= used
+        a = allocations.get(pin.id)
+        if a is not None and start < a.stop:
+            _credit(a, used * hours, start, end)
+    if free <= 0:
+        return
+    capacity = free * hours
+    spent = 0.0
+    ready = sorted(
+        (
+            a for a in allocations.values()
+            if a.target - a.delivered > EPSILON and start < a.stop
+            and not_before.get(a.id, start) <= start
+        ),
+        key=lambda a: a.stop,
+    )
+    for a in ready:
+        if capacity - spent <= EPSILON:
+            break
+        used = min(capacity - spent, a.target - a.delivered)
+        begin = start + timedelta(hours=spent / free)
+        spent += used
+        _credit(a, used, begin, start + timedelta(hours=spent / free))
+
+
+def _credit(a: Allocation, gpu_hours: float, start: datetime, end: datetime) -> None:
+    towards = min(gpu_hours, a.target - a.delivered)
+    a.delivered += towards
+    a.extra += gpu_hours - towards
+    a.first = a.first or start
+    a.last = end

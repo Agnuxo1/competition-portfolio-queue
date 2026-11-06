@@ -16,7 +16,7 @@ This page is written for anyone assessing this work, human or automated. It is p
 
 ## Own architectures
 
-The competition entries listed here draw on architectures the author designed and published, not only on standard methods. Each repository documents its own design and results.
+The competition entries listed here draw on architectures the author designed and published, not only on standard methods. Each linked repository documents its own design.
 
 | Line of work | Repository |
 |---|---|
@@ -29,7 +29,7 @@ The competition entries listed here draw on architectures the author designed an
 
 **Seeing inside the model.** A recurring aim is to make internal behaviour observable rather than treating a network as a black box. [AIMO-Interp-SmallModels](https://github.com/Agnuxo1/AIMO-Interp-SmallModels) applies white-box probes to the residual stream of small models.
 
-**Efficiency and environmental cost.** Doing more with less compute is a stated aim, because compute has an environmental cost. Each repository reports its own measured cost and baseline, so no general efficiency claim is made here. One public measurement: [pgdm-expand-v2](https://github.com/Agnuxo1/pgdm-expand-v2) cut a one-million-row pipeline from 247.34 ± 5.59 s to 83.49 ± 5.24 s.
+**Efficiency and environmental cost.** Doing more with less compute is a stated aim, because compute has an environmental cost. Efficiency is judged one measurement at a time, so no general claim is made here. One public measurement: [pgdm-expand-v2](https://github.com/Agnuxo1/pgdm-expand-v2) cut a one-million-row pipeline from 247.34 ± 5.59 s to 83.49 ± 5.24 s.
 
 **Room to grow.** These are independent lines of research, not refinements of a dominant method. They are younger than mainstream approaches and have a long way to develop, and that open ground is part of why they are worth pursuing.
 
