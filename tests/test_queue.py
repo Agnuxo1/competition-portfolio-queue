@@ -158,7 +158,7 @@ def test_pin_gives_no_credit_before_not_before():
     assert a.first == parse_utc("2026-11-06T09:00:00Z")
     pinned_only = simulate([comp(gpu_target_hours=48, not_before_utc="2026-11-06T09:00:00Z",
                                  submission_utc="2026-11-06T12:00:00Z")], NOW, pins=(pin,))["a"]
-    assert pinned_only.delivered == pytest.approx(2 + 2)  # 09:00-10:00 pinned, then free to the stop
+    assert pinned_only.delivered == pytest.approx(2)  # only 09:00-10:00 on two cards counts
 
 
 def test_simulate_skips_a_lapsed_registration():
