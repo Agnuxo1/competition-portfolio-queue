@@ -1,0 +1,26 @@
+{
+  "@context": "https://w3id.org/codemeta/3.0",
+  "@type": "SoftwareSourceCode",
+  "name": "Competition Portfolio Queue",
+  "description": "A deadline-driven register, GPU capacity simulator and read-only audit tick for running a large portfolio of research competitions from a two-GPU server.",
+  "version": "0.1.0",
+  "dateCreated": "2026-11-06",
+  "license": "https://spdx.org/licenses/MIT",
+  "codeRepository": "https://github.com/Agnuxo1/competition-portfolio-queue",
+  "programmingLanguage": "Python",
+  "runtimePlatform": "Python 3.10+",
+  "author": [
+    {
+      "@type": "Person",
+      "@id": "https://orcid.org/0009-0001-1634-7063",
+      "givenName": "Francisco",
+      "familyName": "Angulo de Lafuente"
+    }
+  ],
+  "copyrightHolder": {
+    "@type": "Person",
+    "@id": "https://orcid.org/0009-0001-1634-7063",
+    "name": "Francisco Angulo de Lafuente"
+  },
+  "keywords": ["research operations", "earliest deadline first", "GPU scheduling", "reproducibility", "provenance"]
+}

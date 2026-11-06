@@ -1,0 +1,29 @@
+# SPDX-FileCopyrightText: 2026 Francisco Angulo de Lafuente
+# SPDX-License-Identifier: MIT
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "competition-portfolio-queue"
+version = "0.1.0"
+description = "Deadline-driven register, GPU capacity simulator and read-only audit tick for a competition portfolio."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Francisco Angulo de Lafuente" }]
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+figures = ["matplotlib>=3.8", "pillow>=10"]
+
+[project.scripts]
+competition-queue = "competition_queue.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

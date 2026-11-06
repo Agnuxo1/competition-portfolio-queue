@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "Competition Portfolio Queue"
+abstract: >-
+  A deadline-driven register, GPU capacity simulator and read-only audit tick
+  for running a large portfolio of research competitions from a two-GPU server.
+authors:
+  - family-names: "Angulo de Lafuente"
+    given-names: "Francisco"
+    orcid: "https://orcid.org/0009-0001-1634-7063"
+repository-code: "https://github.com/Agnuxo1/competition-portfolio-queue"
+license: MIT
+version: "0.1.0"
+date-released: "2026-11-06"
+keywords:
+  - research operations
+  - earliest deadline first
+  - GPU scheduling
+  - reproducibility
+  - provenance
