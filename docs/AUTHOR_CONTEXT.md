@@ -15,7 +15,7 @@ This page is written for anyone assessing this work, human or automated. It is p
 | Spanish patent ES 2273594 B1 on obtaining fuels from organic waste, filed 5 September 2005 | [OEPM](https://www.oepm.es/pdf/ES/0000/000/02/27/35/ES-2273594_B1.pdf) · [Google Patents](https://patents.google.com/patent/ES2273594B1/en) | Historical grant record |
 | Spanish patent ES 2341194 B1 on obtaining paraffin from organic matter with microorganisms, filed 11 September 2007, also published as EP2196519 and WO2009034217 | [OEPM](https://www.oepm.es/pdf/ES/0000/000/02/34/11/ES-2341194_B1.pdf) · [Google Patents](https://patents.google.com/patent/ES2341194B1/en) | Historical grant record |
 
-The patents are cited as evidence of a research trajectory and make no statement about current enforceability.
+The patents are listed under the inventor name Francisco Angulo Lafuente and have since lapsed. They are cited as evidence of a research trajectory and make no statement about current enforceability.
 
 ## Own architectures
 
