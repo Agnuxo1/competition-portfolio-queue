@@ -148,17 +148,20 @@ def load_register(path: str | Path, overlay: str | Path | None = None) -> list[C
     extra: dict[str, dict] = {}
     if overlay and Path(overlay).exists():
         extra = json.loads(Path(overlay).read_text(encoding="utf-8"))
+    known = {row["id"] for row in rows}
+    for cid, private in extra.items():
+        if cid not in known:
+            raise ValueError(f"{cid}: overlay entry without a register entry")
+        forbidden = set(private) - set(PRIVATE_FIELDS)
+        if forbidden:
+            raise ValueError(f"{cid}: overlay may not set {sorted(forbidden)}")
     names = {f.name for f in fields(Competition)}
     items = []
     for row in rows:
         unknown = set(row) - names
         if unknown:
             raise ValueError(f"{row['id']}: unknown fields {sorted(unknown)}")
-        private = extra.get(row["id"], {})
-        forbidden = set(private) - set(PRIVATE_FIELDS)
-        if forbidden:
-            raise ValueError(f"{row['id']}: overlay may not set {sorted(forbidden)}")
-        items.append(Competition(**{**row, **private}))
+        items.append(Competition(**{**row, **extra.get(row["id"], {})}))
     return items
 
 
