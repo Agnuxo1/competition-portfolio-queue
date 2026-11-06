@@ -65,7 +65,7 @@ Rankings are left out on purpose: each platform's leaderboard is the source of t
 | [ARC Prize 2026 ARC-AGI-3](https://www.kaggle.com/competitions/arc-prize-2026-arc-agi-3) | Kaggle | RESULT_PENDING | [arc3-chimera-explorer](https://github.com/Agnuxo1/arc3-chimera-explorer) |
 | [AZAL 2026, Best Smart City Sustainability Award](https://www.ddd.com.qa/azal) | Doha Design District | RESULT_PENDING | private until release |
 | [Bias Bounty Mapping Equity Challenge](https://zindi.world/competitions/bias-bounty-mapping-equity-challenge/) | Zindi | RESULT_PENDING | [overture-coverage-gap-equity](https://github.com/Agnuxo1/overture-coverage-gap-equity) |
-| [HackOS Open Agent Hackathon, Track 02](https://hackathon.genai.works/) | HackOS | RESULT_PENDING | [evidence-change-sentinel](https://github.com/Agnuxo1/evidence-change-sentinel) |
+| [HackOS Open Agent Hackathon, Track 02](https://hackathon.genai.works/event/open-agent-hackathon-2026) | HackOS | RESULT_PENDING | [evidence-change-sentinel](https://github.com/Agnuxo1/evidence-change-sentinel) |
 | [IMMREP26 TCR/pMHC](https://www.kaggle.com/competitions/immrep26) | Kaggle | RESULT_PENDING | private until release |
 | [KISTI DATA·AI 2026](https://aida.kisti.re.kr/) | AIDA | SUBMITTED | private until release |
 | [Nebius x NVIDIA Global AI Hackathon](https://nebiusglobalaihackathon.devpost.com/) | Devpost | RESULT_PENDING | [benchclaw-studio](https://github.com/Agnuxo1/benchclaw-studio) |
