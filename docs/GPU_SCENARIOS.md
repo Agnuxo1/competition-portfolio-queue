@@ -10,7 +10,7 @@ Delivered hours count only the time ahead of the simulation start.
 
 | Competition | Stop (UTC) | Target GPU-h | Delivered GPU-h | Pinned beyond target | Result |
 |---|---|---:|---:|---:|---|
-| umud | 2026-11-14 21:00 | 48 | 48.0 | 320.2 | FULL |
+| umud | 2026-11-14 21:00 | 48 | 48.0 | 316.2 | FULL |
 | solar-filament-2026 | 2026-11-15 04:00 | 48 | 14.0 | 0.0 | PARTIAL |
 | ai-emulation | 2026-11-16 03:00 | 48 | 46.0 | 0.0 | PARTIAL |
 | k12-misconception | 2026-11-16 22:00 | 48 | 38.0 | 0.0 | PARTIAL |
@@ -26,7 +26,7 @@ Delivered hours count only the time ahead of the simulation start.
 
 | Competition | Stop (UTC) | Target GPU-h | Delivered GPU-h | Pinned beyond target | Result |
 |---|---|---:|---:|---:|---|
-| umud | 2026-11-14 21:00 | 48 | 48.0 | 208.1 | FULL |
+| umud | 2026-11-14 21:00 | 48 | 48.0 | 206.1 | FULL |
 | solar-filament-2026 | 2026-11-15 04:00 | 48 | 48.0 | 0.0 | FULL |
 | ai-emulation | 2026-11-16 03:00 | 48 | 48.0 | 0.0 | FULL |
 | k12-misconception | 2026-11-16 22:00 | 48 | 48.0 | 0.0 | FULL |

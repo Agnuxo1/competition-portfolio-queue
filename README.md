@@ -64,7 +64,7 @@ Simulate a scenario with a pinned block:
 
 ```bash
 python -m competition_queue --now 2026-11-06T08:00:00Z schedule \
-  --pin "umud,2026-11-07T04:55:00Z,2026-11-14T21:00:00Z,2"
+  --pin "umud,2026-11-07T06:55:00Z,2026-11-14T21:00:00Z,2"
 ```
 
 Audit against a queue listing, adding a private overlay when you have one:

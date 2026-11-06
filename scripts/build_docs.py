@@ -22,10 +22,10 @@ from competition_queue.render import public_list, schedule_table  # noqa: E402
 from competition_queue.schedule import Pin, simulate  # noqa: E402
 
 NOW = parse_utc("2026-11-06T08:00:00Z")
-TRAFFIC = Pin("traffic-flow-bench", NOW, parse_utc("2026-11-07T04:55:00Z"), 2)
-UMUD_START = parse_utc("2026-11-07T04:55:00Z")
+TRAFFIC = Pin("traffic-flow-bench", NOW, parse_utc("2026-11-07T06:55:00Z"), 2)
+UMUD_START = parse_utc("2026-11-07T06:55:00Z")
 UMUD_END = parse_utc("2026-11-14T21:00:00Z")
-UMUD_SPLIT = parse_utc("2026-11-10T04:55:00Z")
+UMUD_SPLIT = parse_utc("2026-11-10T06:55:00Z")
 SCENARIOS = {
     "A. One entry holds both GPUs until its stop": (
         TRAFFIC, Pin("umud", UMUD_START, UMUD_END, 2),
