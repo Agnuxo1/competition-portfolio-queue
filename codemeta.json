@@ -2,7 +2,7 @@
   "@context": "https://w3id.org/codemeta/3.0",
   "@type": "SoftwareSourceCode",
   "name": "Competition Portfolio Queue",
-  "description": "A deadline-driven register, GPU capacity simulator and read-only audit tick for running a large portfolio of research competitions from a two-GPU server.",
+  "description": "A deadline-driven register, GPU capacity simulator and read-only audit tick for running a large portfolio of research competitions on a handful of GPUs.",
   "version": "0.1.0",
   "dateCreated": "2026-11-06",
   "license": "https://spdx.org/licenses/MIT",

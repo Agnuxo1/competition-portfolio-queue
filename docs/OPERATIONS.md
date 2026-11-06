@@ -24,7 +24,7 @@ Every competition moves through the same stages. A stage changes only when there
 3. Packages ready to deliver.
 4. Critical fixes, then improvements with high impact.
 
-The target for a trainable entry is 24 hours on both GPUs (48 GPU-hours), when the deadline and rules allow it. Training stops two hours before the deadline so the result can be frozen and delivered. Entries that need no training are not given GPU hours.
+The target for a trainable entry is 24 hours on two GPUs (48 GPU-hours), when the deadline and rules allow it. Training stops two hours before the deadline so the result can be frozen and delivered. Entries that need no training are not given GPU hours.
 
 ## Authority
 
