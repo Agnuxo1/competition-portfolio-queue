@@ -71,7 +71,9 @@ def audit(items: list[Competition], queue: dict, now: datetime) -> dict:
             proposals.append(f"client.py cola cerrar {qid}  # register stage {c.stage}")
         if closed and closed < now and entry.get("estado") in ("EN COLA", "AUDITORIA") and c.stage not in ("INELIGIBLE", "CLOSED"):
             anomalies["queue_date_already_past"].append({"id": qid, "cierre_utc": entry["cierre_utc"], "stage": c.stage})
-        dates = [d for d in (c.submission, c.registration) if d]
+        dates = [c.submission] if c.submission else []
+        if c.registration and not c.registered:
+            dates.append(c.registration)
         if c.active and closed and not dates:
             anomalies["register_date_missing"].append({"id": qid, "queue": entry["cierre_utc"]})
         elif c.active and dates and not closed:

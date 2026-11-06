@@ -254,6 +254,12 @@ def test_audit_compares_the_queue_with_either_kind_of_deadline():
     assert "deadline_mismatch" not in r["anomalies"]
 
 
+def test_audit_ignores_the_registration_date_once_registered():
+    item = comp(registration_utc="2026-11-08T00:00:00Z", registered=True)
+    r = audit([item], queue(cierre_utc="2026-11-08T00:00:00Z"), NOW)
+    assert "deadline_mismatch" in r["anomalies"]
+
+
 def test_audit_reports_missing_dates_on_each_side():
     undated = comp(submission_utc=None, deadline_note="month only")
     assert "register_date_missing" in audit([undated], queue(cierre_utc="2026-11-08T00:00:00Z"), NOW)["anomalies"]
@@ -300,9 +306,10 @@ def test_load_register_merges_overlay_and_rejects_unknown_fields(tmp_path):
     over = tmp_path / "o.json"
     over.write_text(json.dumps({"a": {"gate": "owner"}}), encoding="utf-8")
     assert load_register(reg, over)[0].gate == "owner"
-    over.write_text(json.dumps({"a": {"typo": 1}}), encoding="utf-8")
-    with pytest.raises(ValueError):
-        load_register(reg, over)
+    for bad in ({"typo": 1}, {"registered": True}, {"submission_utc": "2030-01-01T00:00:00Z"}):
+        over.write_text(json.dumps({"a": bad}), encoding="utf-8")
+        with pytest.raises(ValueError):
+            load_register(reg, over)
 
 
 def test_cli_rejects_an_invalid_pin(tmp_path, capsys):

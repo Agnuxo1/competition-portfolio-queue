@@ -74,6 +74,7 @@ class Competition:
     blocker: str = ""
     rank: str = ""
     aliases: list[str] = field(default_factory=list)
+    private_repo: str = ""
 
     @property
     def submission(self) -> datetime | None:
@@ -97,7 +98,7 @@ PUBLIC_FIELDS = (
     "submission_utc", "registration_utc", "registered", "not_before_utc", "deadline_note",
     "code_sharing", "repo", "repo_visibility", "gpu_target_hours",
 )
-PRIVATE_FIELDS = ("gate", "next_action", "blocker", "rank", "aliases")
+PRIVATE_FIELDS = ("gate", "next_action", "blocker", "rank", "aliases", "private_repo")
 
 
 def validate(items: list[Competition]) -> list[str]:
@@ -150,11 +151,14 @@ def load_register(path: str | Path, overlay: str | Path | None = None) -> list[C
     names = {f.name for f in fields(Competition)}
     items = []
     for row in rows:
-        merged = {**row, **extra.get(row["id"], {})}
-        unknown = set(merged) - names
+        unknown = set(row) - names
         if unknown:
             raise ValueError(f"{row['id']}: unknown fields {sorted(unknown)}")
-        items.append(Competition(**merged))
+        private = extra.get(row["id"], {})
+        forbidden = set(private) - set(PRIVATE_FIELDS)
+        if forbidden:
+            raise ValueError(f"{row['id']}: overlay may not set {sorted(forbidden)}")
+        items.append(Competition(**{**row, **private}))
     return items
 
 
