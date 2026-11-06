@@ -2,7 +2,7 @@
 
 # Competition Portfolio Queue
 
-**One register, one deadline order and one honest view of GPU capacity for running dozens of research competitions from a two-GPU server.**
+**One register, one deadline order and one honest view of GPU capacity for running dozens of research competitions on a handful of GPUs.**
 
 [![CI](https://github.com/Agnuxo1/competition-portfolio-queue/actions/workflows/ci.yml/badge.svg)](https://github.com/Agnuxo1/competition-portfolio-queue/actions/workflows/ci.yml)
 ![Python](https://img.shields.io/badge/python-3.10%2B-14213d)
@@ -32,11 +32,11 @@ Run against the real portfolio on 6 November 2026, the first reconciliation gave
 | Open entries with no record in the GPU queue | 8 |
 | Open entries still needing a dedicated repository | 10 |
 
-The capacity simulation showed why a fixed block matters. Holding both GPUs on one entry until its deadline delivers 14 of 48 GPU-hours to the next entry, while releasing one GPU after 72 hours lets every simulated entry reach its target ([table](docs/GPU_SCENARIOS.md)). These figures are simulated capacity, not training results.
+The capacity simulation showed why a fixed block matters. Holding both GPUs on one entry until its deadline delivers 14 of 48 GPU-hours to the next entry, while releasing one GPU after 72 hours lets every simulated entry reach its target, and a third GPU gives more room still ([table](docs/GPU_SCENARIOS.md)). These figures are simulated capacity, not training results.
 
 ## Research question
 
-Can a deterministic register and a simple earliest-deadline rule keep a two-GPU research programme from losing entries, and can it show the cost of a scheduling choice before the hours are spent?
+Can a deterministic register and a simple earliest-deadline rule keep a small research programme from losing entries, and can it show the cost of a scheduling choice before the hours are spent?
 
 ## How it works
 

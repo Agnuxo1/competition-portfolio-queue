@@ -34,6 +34,7 @@ SCENARIOS = {
         TRAFFIC, Pin("umud", UMUD_START, UMUD_SPLIT, 2), Pin("umud", UMUD_SPLIT, UMUD_END, 1),
     ),
 }
+THIRD = "C. Scenario B with a third GPU available"
 SHOWN = ("solar-filament-2026", "ai-emulation", "k12-misconception", "eeg-emg-foundation", "soil-grain-size")
 INK, MUTED, A_COL, B_COL, BG = "#14213d", "#6b7280", "#d1495b", "#00798c", "#fbfaf7"
 
@@ -72,9 +73,9 @@ def main() -> None:
     parts = [
         "# GPU capacity scenarios",
         "",
-        f"Simulated from `data/competitions.json` at {NOW:%Y-%m-%d %H:%M} UTC on two GPUs, one-hour steps,",
+        f"Simulated from `data/competitions.json` at {NOW:%Y-%m-%d %H:%M} UTC on two GPUs unless stated,",
         "with the last two hours before each deadline reserved for freezing and delivery.",
-        "A target of 48 GPU-hours means 24 wall-clock hours on both cards.",
+        "A target of 48 GPU-hours means 24 wall-clock hours on two cards.",
         "These are capacity estimates, not measured training runs and not a forecast of any result.",
         "Delivered hours count only the time ahead of the simulation start.",
         "",
@@ -88,6 +89,8 @@ def main() -> None:
         for shown in range(1, len(SHOWN) + 1):
             frames.append(frame(title, results, colour, shown))
             durations.append(450 if shown < len(SHOWN) else 2600)
+    pins = list(SCENARIOS.values())[1]
+    parts += [f"## {THIRD}", "", schedule_table(simulate(items, NOW, gpus=3, pins=pins))]
     (ROOT / "docs" / "GPU_SCENARIOS.md").write_text("\n".join(parts), encoding="utf-8", newline="\n")
     frames[0].save(
         ROOT / "assets" / "hero-workflow.gif", save_all=True, append_images=frames[1:],

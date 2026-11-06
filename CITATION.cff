@@ -4,7 +4,7 @@ type: software
 title: "Competition Portfolio Queue"
 abstract: >-
   A deadline-driven register, GPU capacity simulator and read-only audit tick
-  for running a large portfolio of research competitions from a two-GPU server.
+  for running a large portfolio of research competitions on a handful of GPUs.
 authors:
   - family-names: "Angulo de Lafuente"
     given-names: "Francisco"
