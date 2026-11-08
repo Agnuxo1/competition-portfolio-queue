@@ -1,5 +1,16 @@
 # Competition status — 8 November 2026
 
+## Verification update - 8 November, 18:48 UTC
+
+The earlier leaderboard table below remains a dated snapshot. These checks add technical evidence and do not establish a new competition score or ranking.
+
+- **Traffic Flow Bench:** a CPU-only run recomposed V1 from the three saved per-task prediction files and the public submission key. All **6,980,503 rows** and all six columns matched the frozen V1 baseline, with **zero mismatches** and byte identity after CRLF/LF normalization. The normalized SHA-256 is `c3cb3594d011309a8d53ae71fff9c58ec32ff9896c71e06aa2daf1c9615ba89f`. The computation took **45.30 seconds**, under effective limits of 8 GiB RAM, zero swap and a CPU quota of 200%; twelve final checks passed and the process is closed. This verifies assembly of saved predictions. Retraining, the exact historical model runtime and end-to-end model reproduction remain unverified. Recovered historical logs declare 300,000 state-training samples, whereas the published run_a.sh specifies 400,000; that discrepancy remains to be reconciled. The code/PDF package has not yet been sent. The [official evaluation and timeline](https://www.kaggle.com/competitions/2026-ieee-big-data-traffic-flow-bench/overview/evaluation) require it by 10 November, 23:59 AoE (**11 November, 12:59 Madrid**) for award eligibility; the review pool comprises the top ten eligible teams, rather than simply the first ten positions overall.
+- **Builder:** a bounded local test completed three reviews in distinct reviewer threads, separate from the draft author's thread, and the deterministic verdict **revise, internal score 6.47/10** on an existing synthetic 20-case draft. This demonstrates the review/verdict stage; successful new researcher generation, scientific benefit and official competition acceptance are not established. The model and preview processes are closed. The public video and official entry remain pending.
+- **GPU observation at 18:48 UTC:** GPU0 and GPU1 utilization was 97% and 99%, respectively, while managed Solar and QVC jobs were active. This is a sample, not evidence of uninterrupted operation.
+
+---
+
+
 Leaderboard snapshot verified through authenticated platform pages and submission APIs between 11:38 and 12:00 UTC. Receipt and publication updates below have their own later timestamps. Ranks can change while a competition remains open. Madrid times below use CET (UTC+01:00).
 
 | Competition | Stage | Verified position and best score | Deadline, Madrid |
