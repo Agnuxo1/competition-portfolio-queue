@@ -15,6 +15,10 @@
 
 </div>
 
+<!-- impact-note:start -->
+<sub><strong>Efficiency and practical value.</strong> A validated register and deterministic deadline scheduler make limited GPU time easier to allocate across competing research tasks. Capacity simulation exposes when a long allocation would prevent another project from finishing, while reconciliation identifies missing or stale work before further compute is committed. The engine uses only the Python standard library; capacity benefits are simulated. See the <a href="docs/GPU_SCENARIOS.md">GPU scenarios</a>.</sub>
+<!-- impact-note:end -->
+
 ## Abstract
 
 A solo research programme can run more competitions than any one list can track. Deadlines live on Kaggle, Codabench, Devpost, OpenReview and national portals, status lives in work folders and mailboxes, and the two GPUs live behind their own queue. Entries get lost in the gaps between those lists.
